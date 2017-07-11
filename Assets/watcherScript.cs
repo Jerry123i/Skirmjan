@@ -12,6 +12,18 @@ public class watcherScript : MonoBehaviour {
 
         todosOsJogadores = GameObject.FindGameObjectsWithTag("Player");
 
+        if (todosOsJogadores[0].transform.localPosition.x > todosOsJogadores[1].transform.localPosition.x)
+        {
+            todosOsJogadores[0].GetComponent<playerScript>().isLeftScreen = false;
+            todosOsJogadores[1].GetComponent<playerScript>().isLeftScreen = true;
+        }
+
+        else
+        {
+            todosOsJogadores[0].GetComponent<playerScript>().isLeftScreen = true;
+            todosOsJogadores[1].GetComponent<playerScript>().isLeftScreen = false;
+        }
+
         if (todosOsJogadores[0].GetComponent<playerScript>().swapMe && todosOsJogadores[1].GetComponent<playerScript>().swapMe)
         {
             SwapPlaces(todosOsJogadores[0], todosOsJogadores[1]);

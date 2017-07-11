@@ -9,6 +9,8 @@ public class playerScript : MonoBehaviour {
     public bool swapMe;
 
     public bool isDshing;
+    public bool isJumping;
+    public bool isFalling;
 
     public string rButton;
     public string lButton;
@@ -20,8 +22,19 @@ public class playerScript : MonoBehaviour {
     public float maxDashDistance;
     public float dashStartLocal;
 
-	// Update is called once per frame
-	void Update () {
+    public int jumpTimeMultiplyer;
+    public float jumpDistance;
+    public float jumpSpeed;
+    private float jumpHeight;
+    float wallPosition;
+    float xis;
+    float yip;
+    float a;
+    float b;
+    float c;
+
+    // Update is called once per frame
+    void Update () {
 
         //Rotacao
         if (!isLeftScreen)
@@ -33,40 +46,82 @@ public class playerScript : MonoBehaviour {
             this.transform.eulerAngles = Vector3.zero;
         }
 
-        if (Input.GetKeyDown(rButton))
+        if (!isJumping && !isFalling)
         {
-            if (isDshing){
-                isDshing = false;
-            }
-
-            else
+            if (Input.GetKeyDown(rButton))
             {
-                isDshing = true;
-                trueIfDashRight = true;
-                dashStartLocal = this.transform.localPosition.x;
-            }
-            
-        }
+                if (isDshing)
+                {
+                    isDshing = false;
+                }
 
-        else if (Input.GetKeyDown(lButton))
-        {
+                else
+                {
+                    isDshing = true;
+                    trueIfDashRight = true;
+                    dashStartLocal = this.transform.localPosition.x;
+                }
+
+            }
+
+            else if (Input.GetKeyDown(lButton))
+            {
+                if (isDshing)
+                {
+                    isDshing = false;
+                }
+
+                else
+                {
+                    isDshing = true;
+                    trueIfDashRight = false;
+                    dashStartLocal = this.transform.localPosition.x;
+                }
+
+            }
+
             if (isDshing)
             {
-                isDshing = false;
+                Dash();
+            }
+        }
+
+        if (isFalling)
+        {
+            this.transform.Translate(0.0f, -jumpSpeed*Time.deltaTime*2, 0.0f);
+            if(this.transform.localPosition.y <= -1.0f)
+            {
+                isFalling=false;
+                this.transform.localPosition = new Vector3(this.transform.localPosition.x, -1.0f, 0.0f);
+            }
+        }
+
+        else if(isJumping) //caso esteja pulando
+        {
+            if ((Input.GetKeyDown(lButton))|| Input.GetKeyDown(rButton))
+            {
+                isJumping = false;
+                isFalling = true;
             }
 
             else
             {
-                isDshing = true;
-                trueIfDashRight = false;
-                dashStartLocal = this.transform.localPosition.x;
+                xis += Time.deltaTime * jumpSpeed * jumpTimeMultiplyer;
+                yip = xis * xis * a + xis * b + c;
+                this.transform.localPosition = new Vector3(xis, yip, 0.0f);
+
+                if (this.transform.localPosition.y <= -1.0f)
+                {
+                    isJumping = false;
+                    this.transform.localPosition = new Vector3(xis, -1.0f, 0.0f);
+
+                }
             }
+
             
         }
 
-        if (isDshing){
-            Dash();
-        }
+        
         
 
     }
@@ -129,8 +184,43 @@ public class playerScript : MonoBehaviour {
 
             }
         }
-
-               
         
     }
+
+    void SetJump()
+    {
+        wallPosition = this.transform.localPosition.x;
+        xis = wallPosition;
+        isDshing = false;
+        isJumping = true;
+        jumpDistance = Mathf.Abs(dashStartLocal - wallPosition) * 4;
+        jumpHeight = jumpDistance / 2;
+        
+        if (isLeftScreen)
+        {
+            jumpTimeMultiplyer = 1;
+            a = (4 * -jumpHeight) / (jumpDistance * jumpDistance);
+            b = -(4 * (jumpDistance * -jumpHeight + 2 * -jumpHeight * wallPosition)) / (jumpDistance * jumpDistance);
+            c = (4 * (jumpDistance * -jumpHeight * wallPosition + -jumpHeight * wallPosition * wallPosition)) / (jumpDistance * jumpDistance);
+
+            Debug.Log(a.ToString() + b.ToString() + c.ToString());
+        }
+
+        else
+        {
+            jumpTimeMultiplyer = -1;
+            a = (4 * -jumpHeight) / (jumpDistance * jumpDistance);
+            b = (4 * (jumpDistance * -jumpHeight - 2 * -jumpHeight * wallPosition)) / (jumpDistance * jumpDistance);
+            c = -((4 * (jumpDistance * -jumpHeight * wallPosition - -jumpHeight * wallPosition * wallPosition)) / (jumpDistance * jumpDistance));
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D wall)
+    {
+        if (wall.gameObject.tag == "wall")
+        {
+            SetJump();
+        }
+    }
+
 }
