@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class watcherScript : MonoBehaviour {
 
-    GameObject[] todosOsJogadores;
+    public GameObject[] todosOsJogadores;
+    public GameObject playerPrefab;
     public AudioSource audio;
 
 	// Update is called once per frame
 	void Update () {
 
-        todosOsJogadores = GameObject.FindGameObjectsWithTag("Player");
-
+        ReporJogadores();
+                
         if (todosOsJogadores[0].transform.localPosition.x > todosOsJogadores[1].transform.localPosition.x)
         {
             todosOsJogadores[0].GetComponent<playerScript>().isLeftScreen = false;
@@ -85,4 +86,29 @@ public class watcherScript : MonoBehaviour {
         }
 
     }
+
+    void ReporJogadores()
+    {
+        if (todosOsJogadores[0] == null)
+        {
+            todosOsJogadores[1].transform.localPosition = new Vector3 (-1.5f,-1f,0);
+            todosOsJogadores[1].GetComponent<playerScript>().FalseAll();
+
+            todosOsJogadores[0] = Instantiate(playerPrefab, new Vector3(2.0f,-1, 0), new Quaternion(0,0,0,0));
+            todosOsJogadores[0].GetComponent<SpriteRenderer>().color = Color.blue;
+        }
+
+        if (todosOsJogadores[1] == null)
+        {
+            todosOsJogadores[0].transform.localPosition = new Vector3(2.0f, -1f, 0);
+            todosOsJogadores[0].GetComponent<playerScript>().FalseAll();
+
+            todosOsJogadores[1] = Instantiate(playerPrefab, new Vector3(-1.5f, -1f, 0), new Quaternion(0, 0, 0, 0));
+            todosOsJogadores[1].GetComponent<SpriteRenderer>().color = Color.red;
+            todosOsJogadores[1].GetComponent<playerScript>().lButton = "a";
+            todosOsJogadores[1].GetComponent<playerScript>().rButton = "d";
+        }
+
+    }
+
 }

@@ -139,6 +139,7 @@ public class playerScript : MonoBehaviour {
                 else
                 {
                     isDshing = false;
+                    swapMe = false;
                 }
             }
 
@@ -151,6 +152,7 @@ public class playerScript : MonoBehaviour {
                 else
                 {
                     isDshing = false;
+                    swapMe = false;
                 }
 
             }
@@ -168,6 +170,7 @@ public class playerScript : MonoBehaviour {
                 else
                 {
                     isDshing = false;
+                    swapMe = false;
                 }
             }
 
@@ -180,6 +183,7 @@ public class playerScript : MonoBehaviour {
                 else
                 {
                     isDshing = false;
+                    swapMe = false;
                 }
 
             }
@@ -202,8 +206,7 @@ public class playerScript : MonoBehaviour {
             a = (4 * -jumpHeight) / (jumpDistance * jumpDistance);
             b = -(4 * (jumpDistance * -jumpHeight + 2 * -jumpHeight * wallPosition)) / (jumpDistance * jumpDistance);
             c = (4 * (jumpDistance * -jumpHeight * wallPosition + -jumpHeight * wallPosition * wallPosition)) / (jumpDistance * jumpDistance);
-
-            Debug.Log(a.ToString() + b.ToString() + c.ToString());
+            
         }
 
         else
@@ -215,12 +218,40 @@ public class playerScript : MonoBehaviour {
         }
     }
 
-    void OnCollisionEnter2D(Collision2D wall)
+    void OnCollisionEnter2D(Collision2D coll)
     {
-        if (wall.gameObject.tag == "wall")
+        if (coll.gameObject.tag == "wall")
         {
             SetJump();
         }
+
+        else if (coll.gameObject.GetComponent<playerScript>()!=null)
+        {
+            if (isFalling || isJumping)
+            {
+                Destroy(coll.gameObject);
+            }
+
+            else if (isDshing)
+            {
+                swapMe = true;
+            }
+
+            else{
+
+                Destroy(this.gameObject);
+                Debug.Log("Faling-" + isFalling);
+                Debug.Log("Dashing-" + isDshing);
+            }
+
+        }
+    }
+
+    public void FalseAll()
+    {
+        isDshing = false;
+        isFalling = false;
+        isJumping = false;
     }
 
 }

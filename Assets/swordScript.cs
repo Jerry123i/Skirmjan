@@ -35,14 +35,14 @@ public class swordScript : MonoBehaviour {
                 Destroy(coll.gameObject);
             }
 
-            if (coll.gameObject.GetComponent<playerScript>().isDshing == true && holder.isDshing == true)
+            /*else if (coll.gameObject.GetComponent<playerScript>().isDshing == true && holder.isDshing == true)
             {
                 holder.swapMe = true;
                 coll.gameObject.GetComponent<playerScript>().swapMe = true;
-            }
+            }*/
         }
 
-        if (coll.gameObject.GetComponent<swordScript>() != null)
+        else if (coll.gameObject.GetComponent<swordScript>() != null)
         {
             if (coll.GetComponent<swordScript>().holder.isDshing)
             {
